@@ -1,16 +1,15 @@
 package utils
 
 import (
-	"sort"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
-func TestBubbleSortWorstCase(t *testing.T) {
+func TestSortWorstCase(t *testing.T) {
 	els := []int{9, 8, 7, 6, 5}
 
-	BubbleSort(els)
+	Sort(els)
 	assert.NotNil(t, els)
 	assert.EqualValues(t, 5, len(els))
 	assert.EqualValues(t, 5, els[0])
@@ -20,10 +19,10 @@ func TestBubbleSortWorstCase(t *testing.T) {
 	assert.EqualValues(t, 9, els[4])
 }
 
-func TestBubbleSortBestCase(t *testing.T) {
+func TestSortBestCase(t *testing.T) {
 	els := []int{5, 6, 7, 8, 9}
 
-	BubbleSort(els)
+	Sort(els)
 	assert.NotNil(t, els)
 	assert.EqualValues(t, 5, len(els))
 	assert.EqualValues(t, 5, els[0])
@@ -43,44 +42,23 @@ func getElements(n int) []int {
 	return result
 }
 
-func BenchmarkBubbleSort10(b *testing.B) {
-	els := getElements(10)
-	for i := 0; i < b.N; i++ {
-		BubbleSort(els)
-	}
-}
-
 func BenchmarkSort10(b *testing.B) {
 	els := getElements(10)
 	for i := 0; i < b.N; i++ {
-		sort.Ints(els)
-	}
-}
-
-func BenchmarkBubbleSort1000(b *testing.B) {
-	els := getElements(1000)
-	for i := 0; i < b.N; i++ {
-		BubbleSort(els)
+		Sort(els)
 	}
 }
 
 func BenchmarkSort1000(b *testing.B) {
 	els := getElements(1000)
 	for i := 0; i < b.N; i++ {
-		sort.Ints(els)
-	}
-}
-
-func BenchmarkBubbleSort100000(b *testing.B) {
-	els := getElements(100000)
-	for i := 0; i < b.N; i++ {
-		BubbleSort(els)
+		Sort(els)
 	}
 }
 
 func BenchmarkSort100000(b *testing.B) {
 	els := getElements(100000)
 	for i := 0; i < b.N; i++ {
-		sort.Ints(els)
+		Sort(els)
 	}
 }
