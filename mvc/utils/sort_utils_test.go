@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"sort"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -49,6 +50,13 @@ func BenchmarkBubbleSort10(b *testing.B) {
 	}
 }
 
+func BenchmarkSort10(b *testing.B) {
+	els := getElements(10)
+	for i := 0; i < b.N; i++ {
+		sort.Ints(els)
+	}
+}
+
 func BenchmarkBubbleSort1000(b *testing.B) {
 	els := getElements(1000)
 	for i := 0; i < b.N; i++ {
@@ -56,9 +64,23 @@ func BenchmarkBubbleSort1000(b *testing.B) {
 	}
 }
 
+func BenchmarkSort1000(b *testing.B) {
+	els := getElements(1000)
+	for i := 0; i < b.N; i++ {
+		sort.Ints(els)
+	}
+}
+
 func BenchmarkBubbleSort100000(b *testing.B) {
 	els := getElements(100000)
 	for i := 0; i < b.N; i++ {
 		BubbleSort(els)
+	}
+}
+
+func BenchmarkSort100000(b *testing.B) {
+	els := getElements(100000)
+	for i := 0; i < b.N; i++ {
+		sort.Ints(els)
 	}
 }
