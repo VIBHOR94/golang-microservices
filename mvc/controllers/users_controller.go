@@ -1,9 +1,11 @@
 package controllers
 
-import "net/http"
+import (
+	"log"
+	"net/http"
+)
 
 func GetUser(res http.ResponseWriter, req *http.Request) {
-	if err := http.ListenAndServe(":8080", nil); err != nil {
-		panic(err)
-	}
+	userID := req.URL.Query().Get("user_id")
+	log.Printf("about to process user with user id = %v", userID)
 }
