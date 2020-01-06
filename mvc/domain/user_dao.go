@@ -2,6 +2,9 @@ package domain
 
 import (
 	"fmt"
+	"net/http"
+
+	"github.com/VIBHOR94/golang-microservices/mvc/utils"
 )
 
 var (
@@ -11,9 +14,13 @@ var (
 )
 
 // GetUser - Function that returns user by searching via userID
-func GetUser(userID int64) (*User, error) {
+func GetUser(userID int64) (*User, *utils.ApplicationError) {
 	if user := users[userID]; user != nil {
 		return user, nil
 	}
-	return nil, fmt.Errorf("user %d was not found", userID)
+	return nil, &utils.ApplicationError{
+		Message:    fmt.Sprintf("user %v was not found", userID),
+		StatusCode: http.StatusNotFound,
+		Code:       "not_found",
+	}
 }
