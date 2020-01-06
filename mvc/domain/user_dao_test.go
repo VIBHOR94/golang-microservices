@@ -14,5 +14,5 @@ func TestUserNotFound(t *testing.T) {
 	assert.NotNil(t, err)
 	assert.EqualValues(t, http.StatusNotFound, err.StatusCode)
 	assert.EqualValues(t, "not_found", err.Code)
-	assert.EqualValues(t, "user 0 was not found", err.Message)
+	assert.EqualValues(t, "user 0 does not exist", err.Message)
 }
