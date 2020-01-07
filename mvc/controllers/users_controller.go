@@ -23,17 +23,17 @@ func GetUser(c *gin.Context) {
 		}
 
 		// Just return the bad request to the client
-		c.JSON(http.StatusBadRequest, apiErr)
+		utils.Respond(c, apiErr.StatusCode, apiErr)
 		return
 	}
 
 	user, apiErr := services.UsersService.GetUser(userID)
 	if apiErr != nil {
 		// Handle the error and return to the client
-		c.JSON(http.StatusBadRequest, apiErr)
+		utils.Respond(c, apiErr.StatusCode, apiErr)
 		return
 	}
 
 	// return user to client
-	c.JSON(http.StatusOK, user)
+	utils.Respond(c, http.StatusOK, user)
 }
