@@ -15,5 +15,5 @@ var (
 
 // GetUser - Service to fetch the user
 func (u *usersService) GetUser(userID int64) (*domain.User, *utils.ApplicationError) {
-	return domain.GetUser(userID)
+	return domain.UserDao.GetUser(userID)
 }
