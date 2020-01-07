@@ -13,8 +13,16 @@ var (
 	}
 
 	// UserDao - Global level variabe of type userDao
-	UserDao userDao
+	UserDao userDaoInterface
 )
+
+func init() {
+	UserDao = &userDao{}
+}
+
+type userDaoInterface interface {
+	GetUser(int64) (*User, *utils.ApplicationError)
+}
 
 type userDao struct{}
 
