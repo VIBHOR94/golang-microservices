@@ -28,7 +28,7 @@ func GetUser(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	user, apiErr := services.GetUser(userID)
+	user, apiErr := services.UsersService.GetUser(userID)
 	if apiErr != nil {
 		// Handle the error and return to the client
 		res.WriteHeader(apiErr.StatusCode)
