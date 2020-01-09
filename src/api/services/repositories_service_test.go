@@ -46,3 +46,23 @@ func TestCreateRepoErrorFromGithub(t *testing.T) {
 	assert.EqualValues(t, http.StatusUnauthorized, err.Status())
 	assert.EqualValues(t, "Requires authentication", err.Message())
 }
+
+func TestCreateRepoNoError(t *testing.T) {
+	restclient.FlushMockups()
+	restclient.AddMockup(restclient.Mock{
+		Url:        "https://api.github.com/user/repos",
+		HttpMethod: http.MethodPost,
+		Response: &http.Response{
+			StatusCode: http.StatusCreated,
+			Body:       ioutil.NopCloser(strings.NewReader(`{"id": 123, "name": "testing", "owner": {"login": "federicoleon"}}`)),
+		},
+	})
+	request := repositories.CreateRepoRequest{Name: "testing"}
+
+	result, err := RepositoryService.CreateRepo(request)
+	assert.Nil(t, err)
+	assert.NotNil(t, result)
+	assert.EqualValues(t, 123, result.ID)
+	assert.EqualValues(t, "testing", result.Name)
+	assert.EqualValues(t, "federicoleon", result.Owner)
+}
