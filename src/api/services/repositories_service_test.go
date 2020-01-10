@@ -5,11 +5,13 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"sync"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 
 	"github.com/VIBHOR94/golang-microservices/src/api/domain/repositories"
+	"github.com/VIBHOR94/golang-microservices/src/api/utils/errors"
 
 	"github.com/VIBHOR94/golang-microservices/src/api/clients/restclient"
 )
@@ -134,4 +136,34 @@ func TestCreateRepoConcurrentNoError(t *testing.T) {
 	assert.EqualValues(t, 123, result.Response.ID)
 	assert.EqualValues(t, "testing", result.Response.Name)
 	assert.EqualValues(t, "federicoleon", result.Response.Owner)
+}
+
+func TestHandleRepoResults(t *testing.T) {
+	input := make(chan repositories.CreateRepositoriesResult)
+	output := make(chan repositories.CreateReposResponse)
+
+	var wg sync.WaitGroup
+
+	service := reposService{}
+	go service.handleRepoResults(&wg, input, output)
+
+	wg.Add(1)
+	go func() {
+		input <- repositories.CreateRepositoriesResult{
+			Error: errors.NewBadRequestError("invalid repository name"),
+		}
+	}()
+
+	wg.Wait()
+	close(input)
+
+	result := <-output
+
+	assert.NotNil(t, result)
+	assert.EqualValues(t, 0, result.StatusCode)
+
+	assert.EqualValues(t, 1, len(result.Results))
+	assert.NotNil(t, result.Results[0].Error)
+	assert.EqualValues(t, http.StatusBadRequest, result.Results[0].Error.Status())
+	assert.EqualValues(t, "invalid repository name", result.Results[0].Error.Message())
 }
