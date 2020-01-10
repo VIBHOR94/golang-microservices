@@ -13,7 +13,7 @@ import (
 	"github.com/VIBHOR94/golang-microservices/src/api/utils/errors"
 )
 
-type resposService struct{}
+type reposService struct{}
 
 type reposServiceInterface interface {
 	CreateRepo(repositories repositories.CreateRepoRequest) (*repositories.CreateRepoResponse, errors.APIError)
@@ -25,10 +25,10 @@ var (
 )
 
 func init() {
-	RepositoryService = &resposService{}
+	RepositoryService = &reposService{}
 }
 
-func (s *resposService) CreateRepo(input repositories.CreateRepoRequest) (*repositories.CreateRepoResponse, errors.APIError) {
+func (s *reposService) CreateRepo(input repositories.CreateRepoRequest) (*repositories.CreateRepoResponse, errors.APIError) {
 	if err := input.Validate(); err != nil {
 		return nil, err
 	}
@@ -51,7 +51,7 @@ func (s *resposService) CreateRepo(input repositories.CreateRepoRequest) (*repos
 	return &result, nil
 }
 
-func (s *resposService) CreateRepos(requests []repositories.CreateRepoRequest) (repositories.CreateReposResponse, errors.APIError) {
+func (s *reposService) CreateRepos(requests []repositories.CreateRepoRequest) (repositories.CreateReposResponse, errors.APIError) {
 	input := make(chan repositories.CreateRepositoriesResult)
 	output := make(chan repositories.CreateReposResponse)
 
@@ -87,7 +87,7 @@ func (s *resposService) CreateRepos(requests []repositories.CreateRepoRequest) (
 	return result, nil
 }
 
-func (s *resposService) handleRepoResults(wg *sync.WaitGroup, input chan repositories.CreateRepositoriesResult, output chan repositories.CreateReposResponse) {
+func (s *reposService) handleRepoResults(wg *sync.WaitGroup, input chan repositories.CreateRepositoriesResult, output chan repositories.CreateReposResponse) {
 	var results repositories.CreateReposResponse
 	for incomingEvent := range input {
 		repoResult := repositories.CreateRepositoriesResult{
@@ -100,7 +100,7 @@ func (s *resposService) handleRepoResults(wg *sync.WaitGroup, input chan reposit
 	output <- results
 }
 
-func (s *resposService) createRepoConcurrent(input repositories.CreateRepoRequest, output chan repositories.CreateRepositoriesResult) {
+func (s *reposService) createRepoConcurrent(input repositories.CreateRepoRequest, output chan repositories.CreateRepositoriesResult) {
 	if err := input.Validate(); err != nil {
 		output <- repositories.CreateRepositoriesResult{Error: err}
 		return

@@ -66,3 +66,19 @@ func TestCreateRepoNoError(t *testing.T) {
 	assert.EqualValues(t, "testing", result.Name)
 	assert.EqualValues(t, "federicoleon", result.Owner)
 }
+
+func TestCreateRepoConcurrentInvalidRequest(t *testing.T) {
+	request := repositories.CreateRepoRequest{}
+
+	output := make(chan repositories.CreateRepositoriesResult)
+
+	service := reposService{}
+	go service.createRepoConcurrent(request, output)
+
+	result := <-output
+	assert.NotNil(t, result)
+	assert.Nil(t, result.Response)
+	assert.NotNil(t, result.Error)
+	assert.EqualValues(t, http.StatusBadRequest, result.Error.Status())
+	assert.EqualValues(t, "invalid repository name", result.Error.Message())
+}
