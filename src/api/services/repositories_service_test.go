@@ -82,3 +82,29 @@ func TestCreateRepoConcurrentInvalidRequest(t *testing.T) {
 	assert.EqualValues(t, http.StatusBadRequest, result.Error.Status())
 	assert.EqualValues(t, "invalid repository name", result.Error.Message())
 }
+
+func TestCreateRepoConcurrentErrorFromGithub(t *testing.T) {
+	restclient.FlushMockups()
+	restclient.AddMockup(restclient.Mock{
+		Url:        "https://api.github.com/user/repos",
+		HttpMethod: http.MethodPost,
+		Response: &http.Response{
+			StatusCode: http.StatusUnauthorized,
+			Body:       ioutil.NopCloser(strings.NewReader(`{"message": "Requires authentication","documentation_url": "https://developer.github.com/docs"}`)),
+		},
+	})
+
+	request := repositories.CreateRepoRequest{Name: "testing"}
+
+	output := make(chan repositories.CreateRepositoriesResult)
+
+	service := reposService{}
+	go service.createRepoConcurrent(request, output)
+
+	result := <-output
+	assert.NotNil(t, result)
+	assert.Nil(t, result.Response)
+	assert.NotNil(t, result.Error)
+	assert.EqualValues(t, http.StatusUnauthorized, result.Error.Status())
+	assert.EqualValues(t, "Requires authentication", result.Error.Message())
+}
