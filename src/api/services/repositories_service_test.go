@@ -167,3 +167,25 @@ func TestHandleRepoResults(t *testing.T) {
 	assert.EqualValues(t, http.StatusBadRequest, result.Results[0].Error.Status())
 	assert.EqualValues(t, "invalid repository name", result.Results[0].Error.Message())
 }
+
+func TestCreateReposInvalidRequests(t *testing.T) {
+	requests := []repositories.CreateRepoRequest{
+		{},
+		{Name: "   "},
+	}
+
+	result, err := RepositoryService.CreateRepos(requests)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, result)
+	assert.EqualValues(t, http.StatusBadRequest, result.StatusCode)
+	assert.EqualValues(t, 2, len(result.Results))
+
+	assert.Nil(t, result.Results[0].Response)
+	assert.EqualValues(t, http.StatusBadRequest, result.Results[0].Error.Status())
+	assert.EqualValues(t, "invalid repository name", result.Results[0].Error.Message())
+
+	assert.Nil(t, result.Results[1].Response)
+	assert.EqualValues(t, http.StatusBadRequest, result.Results[1].Error.Status())
+	assert.EqualValues(t, "invalid repository name", result.Results[1].Error.Message())
+}
