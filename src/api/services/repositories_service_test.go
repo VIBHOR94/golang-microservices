@@ -189,3 +189,39 @@ func TestCreateReposInvalidRequests(t *testing.T) {
 	assert.EqualValues(t, http.StatusBadRequest, result.Results[1].Error.Status())
 	assert.EqualValues(t, "invalid repository name", result.Results[1].Error.Message())
 }
+
+func TestCreateReposOneSuccessOneFail(t *testing.T) {
+	restclient.FlushMockups()
+	restclient.AddMockup(restclient.Mock{
+		Url:        "https://api.github.com/user/repos",
+		HttpMethod: http.MethodPost,
+		Response: &http.Response{
+			StatusCode: http.StatusCreated,
+			Body:       ioutil.NopCloser(strings.NewReader(`{"id": 123, "name": "testing", "owner": {"login": "federicoleon"}}`)),
+		},
+	})
+
+	requests := []repositories.CreateRepoRequest{
+		{},
+		{Name: "testing"},
+	}
+
+	result, err := RepositoryService.CreateRepos(requests)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, result)
+	assert.EqualValues(t, http.StatusPartialContent, result.StatusCode)
+	assert.EqualValues(t, 2, len(result.Results))
+
+	for _, result := range result.Results {
+		if result.Error != nil {
+			assert.EqualValues(t, http.StatusBadRequest, result.Error.Status())
+			assert.EqualValues(t, "invalid repository name", result.Error.Message())
+			continue
+		}
+
+		assert.EqualValues(t, 123, result.Response.ID)
+		assert.EqualValues(t, "testing", result.Response.Name)
+		assert.EqualValues(t, "federicoleon", result.Response.Owner)
+	}
+}
