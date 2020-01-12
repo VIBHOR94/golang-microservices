@@ -23,7 +23,7 @@ func TestMain(m *testing.M) {
 
 func TestCreateRepoInvalidInputNmae(t *testing.T) {
 	request := repositories.CreateRepoRequest{}
-	result, err := RepositoryService.CreateRepo(request)
+	result, err := RepositoryService.CreateRepo("client1", request)
 	assert.Nil(t, result)
 	assert.NotNil(t, err)
 	assert.EqualValues(t, http.StatusBadRequest, err.Status())
@@ -42,7 +42,7 @@ func TestCreateRepoErrorFromGithub(t *testing.T) {
 	})
 	request := repositories.CreateRepoRequest{Name: "testing"}
 
-	result, err := RepositoryService.CreateRepo(request)
+	result, err := RepositoryService.CreateRepo("client1", request)
 	assert.Nil(t, result)
 	assert.NotNil(t, err)
 	assert.EqualValues(t, http.StatusUnauthorized, err.Status())
@@ -61,7 +61,7 @@ func TestCreateRepoNoError(t *testing.T) {
 	})
 	request := repositories.CreateRepoRequest{Name: "testing"}
 
-	result, err := RepositoryService.CreateRepo(request)
+	result, err := RepositoryService.CreateRepo("client1", request)
 	assert.Nil(t, err)
 	assert.NotNil(t, result)
 	assert.EqualValues(t, 123, result.ID)
@@ -75,7 +75,7 @@ func TestCreateRepoConcurrentInvalidRequest(t *testing.T) {
 	output := make(chan repositories.CreateRepositoriesResult)
 
 	service := reposService{}
-	go service.createRepoConcurrent(request, output)
+	go service.createRepoConcurrent("client1", request, output)
 
 	result := <-output
 	assert.NotNil(t, result)
@@ -101,7 +101,7 @@ func TestCreateRepoConcurrentErrorFromGithub(t *testing.T) {
 	output := make(chan repositories.CreateRepositoriesResult)
 
 	service := reposService{}
-	go service.createRepoConcurrent(request, output)
+	go service.createRepoConcurrent("client1", request, output)
 
 	result := <-output
 	assert.NotNil(t, result)
@@ -127,7 +127,7 @@ func TestCreateRepoConcurrentNoError(t *testing.T) {
 	output := make(chan repositories.CreateRepositoriesResult)
 
 	service := reposService{}
-	go service.createRepoConcurrent(request, output)
+	go service.createRepoConcurrent("client1", request, output)
 
 	result := <-output
 	assert.NotNil(t, result)
@@ -174,7 +174,7 @@ func TestCreateReposInvalidRequests(t *testing.T) {
 		{Name: "   "},
 	}
 
-	result, err := RepositoryService.CreateRepos(requests)
+	result, err := RepositoryService.CreateRepos("client1", requests)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, result)
@@ -206,7 +206,7 @@ func TestCreateReposOneSuccessOneFail(t *testing.T) {
 		{Name: "testing"},
 	}
 
-	result, err := RepositoryService.CreateRepos(requests)
+	result, err := RepositoryService.CreateRepos("client1", requests)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, result)
@@ -242,7 +242,7 @@ func TestCreateReposRepoAlreadyExistsFailure(t *testing.T) {
 		{Name: "testing"},
 	}
 
-	result, err := RepositoryService.CreateRepos(requests)
+	result, err := RepositoryService.CreateRepos("client1", requests)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, result)
