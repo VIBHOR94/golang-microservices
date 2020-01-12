@@ -78,7 +78,8 @@ func handleResults(wg *sync.WaitGroup, input chan createRepoResult) {
 }
 
 func createRepo(buffer chan bool, output chan createRepoResult, request repositories.CreateRepoRequest) {
-	result, err := services.RepositoryService.CreateRepo(request)
+	// TODO: Add client ID dynamically
+	result, err := services.RepositoryService.CreateRepo("some_client_id", request)
 
 	output <- createRepoResult{
 		Request: request,
