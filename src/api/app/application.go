@@ -1,6 +1,7 @@
 package app
 
 import (
+	"github.com/VIBHOR94/golang-microservices/src/api/log"
 	"github.com/gin-gonic/gin"
 )
 
@@ -13,8 +14,9 @@ func init() {
 }
 
 func StartApp() {
+	log.Info("about to map the urls")
 	mapUrls()
-
+	log.Info("urls successfully mapped")
 	if err := router.Run(":8080"); err != nil {
 		panic(err)
 	}
